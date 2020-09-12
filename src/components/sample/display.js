@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { RootContext } from "services/context";
 
 const Landing = ({ history }) => {
-  const [context, setContext] = useContext(RootContext);
+  const [context] = useContext(RootContext);
   return <Container>{context.number}</Container>;
 };
 
