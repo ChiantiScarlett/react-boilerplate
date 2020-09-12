@@ -7,6 +7,7 @@ import { Route, Switch } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 import { viewRoutes } from "services/routes";
 import { RootContext, initialValue } from "services/context";
+import { LOCAL_STORAGE_NAME } from "services/settings";
 
 /**
  * Wrapper for updating title
@@ -20,9 +21,27 @@ const TitleUpdater = ({ title, children }) => {
  * Core Application
  */
 const App = () => {
-  const [context, setContext] = useState(initialValue);
+  // Create context reader & writer that syncs with localStorage:
+  const [context, setContext] = useState(() => {
+    try {
+      const localData = localStorage.getItem(LOCAL_STORAGE_NAME);
+      return localData ? JSON.parse(localData) : initialValue;
+    } catch (err) {
+      console.log(err);
+      return initialValue;
+    }
+  });
+  const setContextAndStore = (data) => {
+    try {
+      setContext(data);
+      window.localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(data));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
-    <RootContext.Provider value={[context, setContext]}>
+    <RootContext.Provider value={[context, setContextAndStore]}>
       <BrowserRouter>
         <Switch>
           {Object.keys(viewRoutes).map((key, idx) => (
